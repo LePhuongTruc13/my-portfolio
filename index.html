@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ENTER // Micro-Workspace Protocol</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cyber: {
+                            bg: '#080b0e',
+                            surface: '#11161b',
+                            card: '#161d24',
+                            border: '#222c37',
+                            accent: '#38bdf8',
+                            glow: '#00f0ff',
+                            amber: '#f59e0b',
+                            lamp: '#ffb03a'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Space Grotesk', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #080b0e;
+            color: #e2e8f0;
+            font-family: 'Space Grotesk', sans-serif;
+            overflow-x: hidden;
+        }
+
+        .terminal-grid {
+            background-size: 40px 40px;
+            background-image: linear-gradient(to right, rgba(34, 44, 55, 0.15) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(34, 44, 55, 0.15) 1px, transparent 1px);
+        }
+
+        .ambient-lamp {
+            background: radial-gradient(circle at 50% 50%, rgba(255, 176, 58, 0.08) 0%, rgba(56, 189, 248, 0.02) 45%, transparent 70%);
+        }
+
+        .keycap-glow {
+            box-shadow: 0 0 30px rgba(0, 240, 255, 0.15), inset 0 0 15px rgba(0, 240, 255, 0.05);
+        }
+
+        .keycap-glow:hover {
+            box-shadow: 0 0 45px rgba(255, 176, 58, 0.25), inset 0 0 20px rgba(255, 176, 58, 0.1);
+        }
+
+        .code-reveal {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .code-reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .cursor-blink::after {
+            content: '|';
+            animation: blink 1s step-end infinite;
+        }
+
+        @keyframes blink {
+            from, to { color: transparent }
+            50% { color: #38bdf8 }
+        }
+
+        .isometric-card {
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+        }
+
+        .isometric-card:hover {
+            transform: translateY(-6px) scale(1.01);
+            border-color: rgba(255, 176, 58, 0.3);
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-cyber-amber selection:text-cyber-bg">
+
+    <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <div class="absolute inset-0 terminal-grid"></div>
+        <div class="absolute top-[20%] left-[10%] w-[50vw] h-[50vw] ambient-lamp rounded-full blur-3xl"></div>
+        <div class="absolute bottom-[10%] right-[-5%] w-[40vw] h-[40vw] bg-cyber-accent/5 rounded-full blur-[120px]"></div>
+    </div>
+
+    <nav id="top-nav" class="fixed top-0 left-0 w-full z-50 transition-all duration-300 h-20 flex items-center border-b border-transparent">
+        <div class="w-full max-w-7xl mx-auto px-6 flex items-center justify-between">
+            <a href="#" class="font-mono text-base font-bold tracking-wider flex items-center gap-3 text-white">
+                <span class="flex h-2 w-2 relative">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyber-glow opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2 w-2 bg-cyber-glow"></span>
+                </span>
+                LPT // ANALYTICS
+            </a>
+            
+            <div class="hidden md:flex items-center gap-8 font-mono text-xs uppercase tracking-widest text-slate-400">
+                <a href="#home" class="hover:text-cyber-glow transition-colors">HOME</a>
+                <a href="#architecture" class="hover:text-cyber-glow transition-colors">ABOUT ME</a>
+                <a href="#console" class="hover:text-cyber-glow transition-colors">SKILLS</a>
+                <a href="#modules" class="hover:text-cyber-glow transition-colors">PROJECTS</a>
+                <a href="#hardware" class="hover:text-cyber-glow transition-colors">CONTACT</a>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <a href="https://github.com/LePhuongTruc13"
+                    target="_blank"
+                    class="inline-flex items-center gap-2 font-mono text-xs border border-cyber-accent/30 px-5 py-2.5 bg-cyber-surface text-cyber-amber hover:border-cyber-glow hover:text-white transition-all">
+                        <iconify-icon icon="mdi:github" class="text-base"></iconify-icon>
+                        <span>GitHub</span>
+                </a>
+
+                <a href="https://www.linkedin.com/in/tr%C3%BAc-l%C3%AA-8a8102361/"
+                    target="_blank"
+                    class="inline-flex items-center gap-2 font-mono text-xs border border-cyber-accent/30 px-5 py-2.5 bg-cyber-surface text-cyber-amber hover:border-cyber-glow hover:text-white transition-all">
+                        <iconify-icon icon="mdi:linkedin" class="text-base"></iconify-icon>
+                        <span>LinkedIn</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <header id="home" class="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
+        <div class="absolute inset-0 z-0">
+            <video id="hero-bg-video" autoplay loop muted playsinline class="w-full h-full object-cover opacity-40 mix-blend-screen">
+                <source src="./assets/video.mp4" type="video/mp4">
+            </video>
+            <div class="absolute inset-0 bg-gradient-to-t from-cyber-bg via-cyber-bg/5 to-transparent"></div>
+        </div>
+
+        <div class="relative z-10 w-full max-w-7xl mx-auto px-6 grid lg:grid-cols-12 gap-12 items-center py-12">
+            <div class="lg:col-span-7 space-y-8 text-left">
+                <div class="inline-flex items-center gap-3 border border-cyber-border bg-cyber-surface/80 px-4 py-1.5 rounded-none">
+                    <iconify-icon icon="radial-blur" class="text-cyber-amber animate-spin"></iconify-icon>
+                    <span class="font-mono text-xs uppercase tracking-widest text-slate-300">Data Intelligence Platform</span>
+                </div>
+
+                <h1 class="text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight text-white leading-[1.1]">
+                    Data Analyst 
+                    ASPIRING DATA SCIENTIST <br>
+                    <span class="font-mono text-transparent bg-clip-text bg-gradient-to-r from-cyber-accent via-cyber-lamp to-cyber-amber">LE PHUONG TRUC</span>
+                </h1>
+
+                <p class="max-w-xl text-slate-400 text-base sm:text-lg font-light leading-relaxed">
+                    From raw data to intelligent decisions.
+                    I design end-to-end data solutions by combining analytics, machine learning, interactive visualization, and modern web technologies.
+                </p>
+
+                <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+                    <a href="#modules" class="px-8 py-4 bg-cyber-accent text-cyber-bg font-mono text-xs uppercase tracking-widest font-bold hover:bg-cyber-glow transition-all text-center keycap-glow">
+                        Explore Projects
+                    </a>
+                    <a href="#architecture" class="px-8 py-4 border border-cyber-border bg-cyber-surface/40 font-mono text-xs uppercase tracking-widest font-light text-slate-300 hover:border-slate-400 transition-all text-center">
+                        Download CV
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="relative z-10">
+
+        <section id="architecture" class="py-32 max-w-7xl mx-auto px-6">
+            <div class="grid lg:grid-cols-12 gap-12 items-center">
+                <div class="lg:col-span-5 space-y-6 code-reveal">
+                    <span class="font-mono text-xs text-cyber-amber uppercase tracking-widest block">ABOUT ME</span>
+                    <h2 class="text-4xl sm:text-5xl font-bold tracking-tight text-white">Building Data-Driven Solutions</h2>
+                    <p class="text-slate-400 font-light leading-relaxed">
+                        I am an Information Technology student passionate about Data Analytics, Machine Learning, and Artificial Intelligence.
+                        I enjoy transforming raw data into meaningful insights through analytics, visualization, and intelligent systems. My goal is to build impactful solutions that support data-driven decision-making.
+                    </p>
+                    <div class="grid grid-cols-2 gap-4 pt-4">
+                        <div class="border-l-2 border-cyber-accent pl-4">
+                            <div class="font-mono text-xl font-bold text-white">04+</div>
+                            <div class="text-xs text-slate-500 tracking-wider uppercase">PROJECTS</div>
+                        </div>
+                        <div class="border-l-2 border-cyber-lamp pl-4">
+                            <div class="font-mono text-xl font-bold text-white">10+</div>
+                            <div class="text-xs text-slate-500 tracking-wider uppercase">TECHNOLOGIES</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-7 grid sm:grid-cols-2 gap-6">
+                    <div class="isometric-card border border-cyber-border bg-cyber-card p-8 space-y-4">
+                        <iconify-icon icon="ph:graduation-cap-light" class="text-3xl text-cyber-accent"></iconify-icon>
+                        <h3 class="text-xl font-semibold text-white">Education</h3>
+                        <p class="text-sm text-slate-400 font-light leading-relaxed">
+                            Van Lang University<br>
+                            Bachelor of Information Technology<br>
+                            Building expertise in<br>
+                            Data Analytics,
+                            Machine Learning,
+                            and Data Science.
+                        </p>
+                    </div>
+
+                    <div class="isometric-card border border-cyber-border bg-cyber-card p-8 space-y-4">
+                        <iconify-icon icon="ph:rocket-launch-light" class="text-3xl text-cyber-lamp"></iconify-icon>
+                        <h3 class="text-xl font-semibold text-white">Career Goal</h3>
+                        <p class="text-sm text-slate-400 font-light leading-relaxed">
+                            Aspiring Data Scientist<br>
+                            Building intelligent,
+                            data-driven solutions
+                            that create real-world impact.
+                        </p>
+                    </div>
+
+                    <div class="isometric-card border border-cyber-border bg-cyber-card p-8 space-y-4">
+                        <iconify-icon icon="ph:users-three-light" class="text-3xl text-slate-400"></iconify-icon>
+                        <h3 class="text-xl font-semibold text-white">SOFT SKILLS</h3>
+                        <p class="text-sm text-slate-400 font-light leading-relaxed">
+                            Problem Solving, Analytical Thinking, Teamwork, Continuous Learning, Communication
+                        </p>
+                    </div>
+
+                    <div class="isometric-card border border-cyber-border bg-cyber-card p-8 space-y-4">
+                        <iconify-icon icon="ph:lightbulb-filament-light" class="text-3xl text-cyber-glow"></iconify-icon>
+                        <h3 class="text-xl font-semibold text-white">Interests</h3>
+                        <p class="text-sm text-slate-400 font-light leading-relaxed">
+                            Data Analytics | Machine Learning<br> 
+                            Knowledge Graphs | Data Visualization
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="console" class="py-32 bg-cyber-surface/50 border-y border-cyber-border">
+            <class="max-w-7xl mx-auto px-6">
+                <div class="max-w-2xl mx-auto text-center mb-16 code-reveal">
+                    <span class="font-mono text-xs text-cyber-accent uppercase tracking-widest block mb-3">SKILLS</span>
+                    <h2 class="text-3xl sm:text-5xl font-bold tracking-tight text-white">Technology Stack</h2>
+                </div>       
+                    <class="p-6 font-mono text-xs sm:text-sm space-y-4 min-h-[320px] bg-gradient-to-b from-cyber-bg to-cyber-surface/20">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                            <div class="border border-cyber-border bg-cyber-card/30 p-4 w-[250px] mx-auto">
+                                <h3 class="text-cyber-amber mb-4">
+                                    DATA ANALYTICS
+                                </h3>
+                                <div class="space-y-3">
+                                    <div>
+                                        <div class="flex justify-between">
+                                            <span>Python</span>
+                                            <span>80%</span>
+                                        </div>
+                                        <div class="h-1 bg-slate-800">
+                                            <div class="h-full bg-cyber-accent w-[90%]"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between">
+                                            <span>Pandas</span>
+                                            <span>75%</span>
+                                        </div>
+                                        <div class="h-1 bg-slate-800">
+                                            <div class="h-full bg-cyber-accent w-[85%]"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between">
+                                            <span>Numpy</span>
+                                            <span>75%</span>
+                                        </div>
+                                        <div class="h-1 bg-slate-800">
+                                            <div class="h-full bg-cyber-accent w-[85%]"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between">
+                                            <span>Feature Engineering</span>
+                                            <span>75%</span>
+                                        </div>
+                                        <div class="h-1 bg-slate-800">
+                                            <div class="h-full bg-cyber-accent w-[85%]"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between">
+                                            <span>Power BI</span>
+                                            <span>60%</span>
+                                        </div>
+                                        <div class="h-1 bg-slate-800">
+                                            <div class="h-full bg-cyber-accent w-[85%]"></div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <!-- MACHINE LEARNING -->
+                            <div class="border border-cyber-border bg-cyber-card/30 p-4 w-[250px] mx-auto">
+
+                                <h3 class="text-cyber-amber mb-4">
+                                    MACHINE LEARNING
+                                </h3>
+                                <div class="space-y-3">
+                                    <div>
+                                        <div class="flex justify-between">
+                                            <span>PyTorch</span>
+                                            <span>75%</span>
+                                        </div>
+                                        <div class="h-1 bg-slate-800">
+                                            <div class="h-full bg-cyber-accent w-[75%]"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between">
+                                            <span>NLP</span>
+                                            <span>75%</span>
+                                        </div>
+                                        <div class="h-1 bg-slate-800">
+                                            <div class="h-full bg-cyber-accent w-[75%]"></div>
+                                        </div>
+                                    </div>
+                                     <div>
+                                        <div class="flex justify-between">
+                                            <span>Deep learning</span>
+                                            <span>70%</span>
+                                        </div>
+                                        <div class="h-1 bg-slate-800">
+                                            <div class="h-full bg-cyber-accent w-[75%]"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- DEVELOPMENT -->
+                            <div class="border border-cyber-border bg-cyber-card/30 p-4 w-[250px] mx-auto">
+                                <h3 class="text-cyber-amber mb-4">
+                                    Development
+                                </h3>
+                                <div class="space-y-3">
+                                    <div>
+                                        <div class="flex justify-between">
+                                            <span>Flask</span>
+                                            <span>70%</span>
+                                        </div>
+                                        <div class="h-1 bg-slate-800">
+                                            <div class="h-full bg-cyber-accent w-[85%]"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between">
+                                            <span>PostgreSQL</span>
+                                            <span>70%</span>
+                                        </div>
+                                        <div class="h-1 bg-slate-800">
+                                            <div class="h-full bg-cyber-accent w-[75%]"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between">
+                                            <span>REST API</span>
+                                            <span>60%</span>
+                                        </div>
+                                        <div class="h-1 bg-slate-800">
+                                            <div class="h-full bg-cyber-accent w-[75%]"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- DEVELOPMENT TOOLS -->
+                            <div class="border border-cyber-border bg-cyber-card/30 p-4 w-[250px] mx-auto">
+                                <h3 class="text-cyber-amber mb-4">
+                                    Tools
+                                </h3>
+                                <div class="space-y-3">
+                                    <div>
+                                        <div class="flex justify-between">
+                                            <span>Git</span>
+                                            <span>70%</span>
+                                        </div>
+
+                                        <div class="h-1 bg-slate-800">
+                                            <div class="h-full bg-cyber-accent w-[85%]"></div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="flex justify-between">
+                                            <span>Docker</span>
+                                            <span>65%</span>
+                                        </div>
+                                        <div class="h-1 bg-slate-800">
+                                            <div class="h-full bg-cyber-accent w-[75%]"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </class>
+                </div>
+            </class>
+        </section>
+
+        <section id="modules" class="py-32 max-w-7xl mx-auto px-6">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-6 code-reveal">
+                <div>
+                    <span class="font-mono text-xs text-cyber-lamp uppercase tracking-widest block mb-3">FEATURED PROJECTS</span>
+                    <h2 class="text-4xl font-bold tracking-tight text-white">Selected Projects</h2>
+                </div>
+                <p class="text-slate-400 max-w-xs font-light text-sm">
+                    A curated collection of projects demonstrating my skills in data analytics, machine learning, and modern web development.
+                </p>
+            </div>
+            <div class="swiper myProjects">
+                <div class="swiper-wrapper">
+                    <div class="swiper-slide">    
+                        <div class="grid md:grid-cols-3 gap-8">
+                            <div class="border border-cyber-border bg-cyber-card p-8 flex flex-col justify-between h-80 group hover:border-cyber-accent/40 transition-colors">
+                                <div>
+                                    <div class="flex justify-between items-start mb-6">
+                                        <a href="https://research-analytics-system-for-van-lang.onrender.com"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            class="flex items-center gap-3 group">
+                                            <div class="w-12 h-12 bg-cyber-accent/10 border border-cyber-accent/20 flex items-center justify-center text-cyber-accent text-xl">
+                                                <iconify-icon icon="ph:play-circle-light"></iconify-icon>
+                                            </div>
+                                            <span class="font-mono text-[11px] uppercase tracking-[0.35em] text-cyber-accent/80 group-hover:text-cyber-accent transition-colors">
+                                                Live Demo
+                                            </span>
+                                        </a>
+                                        <span class="font-mono text-xs text-slate-600">01</span>
+                                    </div>
+                                    <h3 class="text-xl font-bold text-white mb-2 group-hover:text-cyber-accent transition-colors">Research Analytics System for Van Lang University</h3>
+                                    <p class="text-slate-400 text-sm font-light leading-relaxed">
+                                        Research analytics platform with ETL, BERTopic, collaboration networks, knowledge graph, and dashboards.
+                                    </p>
+                                </div>
+                                <div class="font-mono text-[11px] text-slate-500 uppercase tracking-widest">Status: Live Demo Website</div>
+                            </div>
+
+                            <div class="border border-cyber-border bg-cyber-card p-8 flex flex-col justify-between h-80 group hover:border-cyber-lamp/40 transition-colors">
+                                <div>
+                                    <div class="flex justify-between items-start mb-6">
+                                        <a href="https://acesse.one/az9zh1z"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            class="flex items-center gap-3 group">
+                                            <div class="w-12 h-12 bg-cyber-lamp/10 border border-cyber-lamp/20 flex items-center justify-center text-cyber-lamp text-xl">
+                                                <iconify-icon icon="ph:cpu-light"></iconify-icon>
+                                            </div>
+                                            <span class="font-mono text-[11px] uppercase tracking-[0.35em] text-cyber-lamp/80 group-hover:text-cyber-lamp transition-colors">
+                                                PROJECT SHOWCASE
+                                            </span>
+                                        </a>
+                                        <span class="font-mono text-xs text-slate-600">02</span>
+                                    </div>
+                                    <h3 class="text-xl font-bold text-white mb-2 group-hover:text-cyber-lamp transition-colors">Optimizing Drug Identification with a Fusion Model (CNN + MPNN)</h3>
+                                    <p class="text-slate-400 text-sm font-light leading-relaxed">
+                                        A deep learning model that combines CNN and MPNN to improve drug identification accuracy.
+                                    </p>
+                                </div>
+                                <div class="font-mono text-[11px] text-slate-500 uppercase tracking-widest">Status: Website Coming Soon</div>
+                            </div>
+
+                            <div class="border border-cyber-border bg-cyber-card p-8 flex flex-col justify-between h-80 group hover:border-cyber-glow/40 transition-colors">
+                                <div>
+                                    <div class="flex justify-between items-start mb-6">
+                                        <a href="https://l1nk.dev/ibo0lcv"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            class="flex items-center gap-3 group">
+                                            <div class="w-12 h-12 bg-cyber-glow/10 border border-cyber-glow/20 flex items-center justify-center text-cyber-glow text-xl">
+                                                <iconify-icon icon="ph:cpu-light"></iconify-icon>
+                                            </div>
+                                            <span class="font-mono text-[11px] uppercase tracking-[0.35em] text-cyber-glow/80 group-hover:text-cyber-glow transition-colors">
+                                                PROJECT SHOWCASE
+                                            </span>
+                                        </a>
+                                        <span class="font-mono text-xs text-slate-600">03</span>
+                                    </div>
+                                    <h3 class="text-xl font-bold text-white mb-2 group-hover:text-cyber-glow transition-colors">Exploring Image Classification with a Hybrid Model (CNN + GNN)</h3>
+                                    <p class="text-slate-400 text-sm font-light leading-relaxed">
+                                        Hybrid deep learning model comparing CNN and GNN for image classification on the CIFAR-10 dataset.
+                                    </p>
+                                </div>
+                                <div class="font-mono text-[11px] text-slate-500 uppercase tracking-widest">Status: Research Project</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="swiper-slide">    
+                        <div class="grid md:grid-cols-3 gap-8">
+                            <div class="border border-cyber-border bg-cyber-card p-8 flex flex-col justify-between h-80 group hover:border-cyber-accent/40 transition-colors">
+                                <div>
+                                    <div class="flex justify-between items-start mb-6">
+                                        <a href="https://bank-marketing-campaign-analysis.onrender.com"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            class="flex items-center gap-3 group">
+                                            <div class="w-12 h-12 bg-cyber-accent/10 border border-cyber-accent/20 flex items-center justify-center text-cyber-accent text-xl">
+                                                <iconify-icon icon="ph:play-circle-light"></iconify-icon>
+                                            </div>
+                                            <span class="font-mono text-[11px] uppercase tracking-[0.35em] text-cyber-accent/80 group-hover:text-cyber-accent transition-colors">
+                                                Live Demo
+                                            </span>
+                                        </a>
+                                        <span class="font-mono text-xs text-slate-600">04</span>
+                                    </div>
+                                    <h3 class="text-xl font-bold text-white mb-2 group-hover:text-cyber-accent transition-colors">Bank Marketing Analytics & Machine Learning</h3>
+                                    <p class="text-slate-400 text-sm font-light leading-relaxed">
+                                        End-to-End Bank Marketing Analytics & Random Forest Prediction using Python, SQL Server, Power BI, and Flask.
+                                    </p>
+                                </div>
+                                <div class="font-mono text-[11px] text-slate-500 uppercase tracking-widest">Status: LIVE DEMO WEBSITE</div>
+                            </div>
+                    </div>
+                </div>
+            </div>
+            <!-- Navigation -->
+            <div class="flex justify-center items-center gap-6 mt-10">
+
+                <button
+                    class="project-prev w-14 h-14 border border-cyber-accent/40 bg-cyber-card
+                        text-cyber-accent flex items-center justify-center
+                        transition-all duration-300
+                        hover:border-cyber-glow
+                        hover:text-white
+                        hover:shadow-[0_0_20px_rgba(0,240,255,0.35)]">
+
+                    <iconify-icon
+                        icon="ph:arrow-left"
+                        class="text-2xl">
+                    </iconify-icon>
+
+                </button>
+
+                <button
+                    class="project-next w-14 h-14 border border-cyber-lamp/40 bg-cyber-card
+                        text-cyber-lamp flex items-center justify-center
+                        transition-all duration-300
+                        hover:border-cyber-lamp
+                        hover:text-white
+                        hover:shadow-[0_0_20px_rgba(255,176,58,0.35)]">
+
+                    <iconify-icon
+                        icon="ph:arrow-right"
+                        class="text-2xl">
+                    </iconify-icon>
+
+                </button>
+
+            </div>
+        </section>
+
+        <section id="hardware" class="py-32 bg-cyber-card/30 border-t border-cyber-border">
+            <div class="max-w-7xl mx-auto px-6 grid lg:grid-cols-12 gap-16 items-center">
+                <div class="lg:col-span-6 relative order-2 lg:order-1">
+                    <div class="absolute inset-0 bg-cyber-accent/5 blur-[100px] rounded-full pointer-events-none"></div>
+                    <div class="border border-cyber-border p-8 bg-cyber-bg relative z-10 font-mono text-xs space-y-4">
+                        <div class="flex justify-between border-b border-cyber-border/40 pb-3 text-slate-500">
+                            <span>CONTACT INFORMATION</span><span>CONTACT DETAILS</span>
+                        </div>
+                        <div class="flex justify-between border-b border-cyber-border/40 pb-2">
+                            <span class="text-slate-400">Email</span><a href="https://mail.google.com/mail/?view=cm&fs=1&to=lptruc1310@gmail.com" class="text-white hover:text-cyber-amber transition-colors duration-300">lptruc1310@gmail.com</a>
+                        </div>
+                        <div class="flex justify-between border-b border-cyber-border/40 pb-2">
+                            <span class="text-slate-400">Github</span><a href="https://github.com/LePhuongTruc13" class="text-white hover:text-cyber-amber transition-colors duration-300">LePhuongTruc13</a>
+                        </div>
+                        <div class="flex justify-between border-b border-cyber-border/40 pb-2">
+                            <span class="text-slate-400">Linkedin</span><a href="https://www.linkedin.com/in/tr%C3%BAc-l%C3%AA-8a8102361/" class="text-white hover:text-cyber-amber transition-colors duration-300">Trúc Lê</a>
+                        </div>
+                        <div class="flex justify-between pb-1">
+                            <span class="text-slate-400">Instagram</span><a href="https://www.instagram.com/_truwc/" class="text-white hover:text-cyber-amber transition-colors duration-300">_truwc</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-6 space-y-6 order-1 lg:order-2 code-reveal">
+                    <span class="font-mono text-xs text-cyber-accent uppercase tracking-widest block">CONTACT</span>
+                    <h2 class="text-4xl sm:text-5xl font-bold tracking-tight text-white leading-tight">
+                        COMMUNICATION INTERFACE
+                    </h2>
+                    <p class="text-slate-400 font-light leading-relaxed">
+                        Let's build something beyond ordinary code.
+                        Whether it's data analytics,
+                        AI solutions, or software projects,
+                        I'm always open to meaningful
+                        collaborations and new ideas.
+                    </p>
+                    <div class="pt-2">
+                        <button class="px-8 py-4 bg-white text-cyber-bg font-mono text-xs uppercase tracking-widest font-bold hover:bg-cyber-amber transition-colors">
+                            INITIALIZE CONTACT
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="py-32 px-6 max-w-4xl mx-auto text-center relative overflow-hidden">
+            <div class="absolute inset-0 bg-cyber-lamp/5 blur-3xl pointer-events-none rounded-full"></div>
+            <div class="relative z-10 space-y-8 code-reveal">
+                <iconify-icon icon="ph:envelope-simple-light" class="text-4xl text-cyber-accent animate-pulse"></iconify-icon>
+                <h2 class="text-3xl sm:text-5xl font-bold tracking-tight text-white">CONTACT ME</h2>
+                <p class="text-slate-400 text-sm sm:text-base font-light max-w-xl mx-auto leading-relaxed">
+                    Interested in data analytics, machine learning,
+                    or software development?<br>
+                    Leave your email below and I'll contact you soon.
+                </p>
+                <form id="contact-form" class="max-w-md mx-auto space-y-4">
+                    <input
+                        type="text"
+                        name="name"
+                        placeholder="Your Name"
+                        required
+                        class="w-full bg-cyber-card border border-cyber-border px-5 py-4 font-mono text-xs text-white placeholder:text-slate-600 focus:outline-none focus:border-cyber-accent transition-colors">
+                    <input
+                        type="email"
+                        name="email"
+                        placeholder="Your Email"
+                        required
+                        class="w-full bg-cyber-card border border-cyber-border px-5 py-4 font-mono text-xs text-white placeholder:text-slate-600 focus:outline-none focus:border-cyber-accent transition-colors">
+                    <textarea
+                        name="message"
+                        rows="5"
+                        placeholder="Your Message"
+                        required
+                        class="w-full bg-cyber-card border border-cyber-border px-5 py-4 font-mono text-xs text-white placeholder:text-slate-600 resize-none focus:outline-none focus:border-cyber-accent transition-colors"></textarea>
+                    <button
+                        id="send-btn"
+                        type="submit"
+                        class="w-full px-8 py-4 bg-cyber-accent text-cyber-bg font-mono text-xs uppercase tracking-widest font-bold hover:bg-cyber-glow transition-colors">
+                        INITIATE CONTACT
+                    </button>
+
+                </form>
+            </div>
+        </section>
+
+        <footer class="bg-cyber-surface border-t border-cyber-border pt-20 pb-12 px-6 relative overflow-hidden">
+            <div class="max-w-7xl mx-auto grid lg:grid-cols-12 gap-16 items-start relative z-10 mb-16">
+                <div class="lg:col-span-5 space-y-6">
+                    <a href="#" class="font-mono text-lg font-bold tracking-wider text-white">
+                        LE PHUONG TRUC // DATA ANALYST • ASPIRING DATA SCIENTIST
+                    </a>
+                    <p class="text-slate-500 text-sm font-light leading-relaxed max-w-sm">
+                        Transforming raw data into meaningful insights through analytics,
+                        machine learning, and data visualization.
+                    </p>
+                </div>
+
+                <div class="lg:col-span-7 grid grid-cols-2 md:grid-cols-3 gap-12 w-full">
+                    <div>
+                        <h4 class="font-mono text-xs uppercase tracking-widest font-bold text-cyber-amber mb-6">NAVIGATION</h4>
+                        <ul class="space-y-4 font-mono text-xs text-slate-400">
+                            <li><a href="#home" class="hover:text-white transition-colors">Home</a></li>
+                            <li><a href="#architecture" class="hover:text-white transition-colors">About me</a></li>
+                            <li><a href="#console" class="hover:text-white transition-colors">Skills</a></li>
+                            <li><a href="#modules" class="hover:text-white transition-colors">Projects</a></li>
+                            <li><a href="#hardware" class="hover:text-white transition-colors">Contact</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-mono text-xs uppercase tracking-widest font-bold text-cyber-amber mb-6">CORE EXPERTISE</h4>
+                        <ul class="space-y-4 font-mono text-xs text-slate-400">
+                            <li><a href="#" class="hover:text-white transition-colors">Data Analytics</a></li>
+                            <li><a href="#" class="hover:text-white transition-colors">Machine Learning</a></li>
+                            <li><a href="#" class="hover:text-white transition-colors">Data Engineering</a></li>
+                            <li><a href="#" class="hover:text-white transition-colors">Data Visualization</a></li>
+                            <li><a href="#" class="hover:text-white transition-colors">Web Development</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-span-2 md:col-span-1">
+                        <h4 class="font-mono text-xs uppercase tracking-widest font-bold text-cyber-amber mb-6">CONNECT</h4>
+                        <div class="flex gap-4 text-xl text-slate-500">
+                            <a href="https://github.com/LePhuongTruc13" class="hover:text-white transition-colors"><iconify-icon icon="ph:github-logo-light"></iconify-icon></a>
+                            <a href="https://mail.google.com/mail/?view=cm&fs=1&to=lptruc1310@gmail.com" class="hover:text-white transition-colors"><iconify-icon icon="ph:envelope-light"></iconify-icon></a>
+                            <a href="https://www.linkedin.com/in/tr%C3%BAc-l%C3%AA-8a8102361/" class="hover:text-white transition-colors"><iconify-icon icon="ph:linkedin-logo-light"></iconify-icon></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="max-w-7xl mx-auto border-t border-cyber-border/40 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4 relative z-10 font-mono text-[10px] uppercase tracking-widest text-slate-600">
+                <p>© 2026 Le Phuong Truc. All Rights Reserved.</p>
+                <div class="flex gap-8">
+                    <a href="#" class="hover:text-white transition-colors">Built with HTML • Tailwind CSS • JavaScript</a>
+                </div>
+            </div>
+        </footer>
+
+    </main>
+
+    <script>
+        const video = document.getElementById('hero-bg-video');
+        const nav = document.getElementById('top-nav');
+        let scrollActive = false;
+
+        const runScrollLogic = () => {
+            const currentY = window.scrollY;
+            
+            if (video) {
+                video.style.transform = `translateY(${currentY * 0.3}px)`;
+            }
+
+            if (currentY > 60) {
+                nav.classList.remove('h-20', 'border-transparent');
+                nav.classList.add('h-16', 'bg-cyber-bg/90', 'backdrop-blur-md', 'border-cyber-border');
+            } else {
+                nav.classList.remove('h-16', 'bg-cyber-bg/90', 'backdrop-blur-md', 'border-cyber-border');
+                nav.classList.add('h-20', 'border-transparent');
+            }
+        };
+
+        window.addEventListener('scroll', () => {
+            if (!scrollActive) {
+                window.requestAnimationFrame(() => {
+                    runScrollLogic();
+                    scrollActive = false;
+                });
+                scrollActive = true;
+            }
+        }, { passive: true });
+
+        const observerParams = {
+            threshold: 0.1,
+            rootMargin: "0px 0px -40px 0px"
+        };
+
+        const revealCallback = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                    revealCallback.unobserve(entry.target);
+                }
+            });
+        }, observerParams);
+
+        document.querySelectorAll('.code-reveal').forEach(node => revealCallback.observe(node));
+
+        const mockInput = document.getElementById('terminal-input-mock');
+        const sequences = ["compile_all --speed=max", "run mock_compiler.exe", "status --all --verbose"];
+        let sequenceIndex = 0;
+        let characterIndex = 0;
+        let deletionActive = false;
+
+        const processTypewriter = () => {
+            const currentString = sequences[sequenceIndex];
+            
+            if (!deletionActive) {
+                mockInput.textContent = currentString.substring(0, characterIndex + 1);
+                characterIndex++;
+                
+                if (characterIndex === currentString.length) {
+                    deletionActive = true;
+                    setTimeout(processTypewriter, 2000);
+                    return;
+                }
+            } else {
+                mockInput.textContent = currentString.substring(0, characterIndex - 1);
+                characterIndex--;
+                
+                if (characterIndex === 0) {
+                    deletionActive = false;
+                    sequenceIndex = (sequenceIndex + 1) % sequences.length;
+                }
+            }
+            
+            setTimeout(processTypewriter, deletionActive ? 40 : 100);
+        };
+
+        if (mockInput) {
+            setTimeout(processTypewriter, 1000);
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script>
+        const swiper = new Swiper(".myProjects", {
+
+            slidesPerView: 1,
+
+            spaceBetween: 30,
+
+            loop: true,
+
+            navigation: {
+                nextEl: ".project-next",
+                prevEl: ".project-prev",
+            }
+
+        });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script>
+        emailjs.init("iJcs784NDEYyJOWdY");
+
+        const form = document.getElementById("contact-form");
+        const button = document.getElementById("send-btn");
+
+        form.addEventListener("submit", function(e){
+
+            e.preventDefault();
+
+            button.innerText = "SENDING...";
+            button.disabled = true;
+
+            emailjs.sendForm(
+                "service_q4klxgh",
+                "template_puc9s6u",
+                this
+            )
+
+            .then(() => {
+
+                button.innerText = "MESSAGE SENT ✓";
+
+                form.reset();
+
+                setTimeout(() => {
+
+                    button.innerText = "INITIATE CONTACT";
+                    button.disabled = false;
+
+                },3000);
+
+            })
+
+            .catch((error)=>{
+
+                console.log(error);
+
+                button.innerText = "FAILED";
+
+                setTimeout(()=>{
+
+                    button.innerText = "INITIATE CONTACT";
+                    button.disabled = false;
+
+                },3000);
+
+            });
+
+        });
+    </script>
+</body>
+</html>
